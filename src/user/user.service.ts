@@ -63,4 +63,18 @@ export class UserService {
         }
         return true;
     }
+
+    async incrementBalance(id: number, amount: number): Promise<User> {
+        const user = await this.getById(id);
+        return await user.increment('balance', {
+            by: amount,
+        });
+    }
+
+    async decrementBalance(id: number, amount: number): Promise<User> {
+        const user = await this.getById(id);
+        return await user.decrement('balance', {
+            by: amount,
+        });
+    }
 }

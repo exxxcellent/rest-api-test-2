@@ -7,6 +7,7 @@ import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize';
 import { LoggerMiddleware } from './common/middlewares';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ const sequelizeModuleOptions: SequelizeModuleOptions = {
         UserModule,
         AuthModule,
         TokenModule,
+        TransactionsModule,
     ],
     controllers: [AppController],
     providers: [AppService],
