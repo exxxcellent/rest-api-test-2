@@ -1,9 +1,14 @@
+import * as dotenv from 'dotenv';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize';
 import { LoggerMiddleware } from './common/middlewares';
+import { AuthModule } from './auth/auth.module';
+import { TokenModule } from './token/token.module';
+
+dotenv.config();
 
 const sequelizeModuleOptions: SequelizeModuleOptions = {
     dialect: 'postgres',
@@ -14,10 +19,16 @@ const sequelizeModuleOptions: SequelizeModuleOptions = {
     database: process.env.POSTGRES_DB,
     autoLoadModels: true,
     synchronize: true,
+    logging: false,
 };
 
 @Module({
-    imports: [SequelizeModule.forRoot(sequelizeModuleOptions), UserModule],
+    imports: [
+        SequelizeModule.forRoot(sequelizeModuleOptions),
+        UserModule,
+        AuthModule,
+        TokenModule,
+    ],
     controllers: [AppController],
     providers: [AppService],
 })

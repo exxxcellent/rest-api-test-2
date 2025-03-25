@@ -4,6 +4,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 import {
     USER_NOT_DELETED,
     USER_NOT_FOUND,
@@ -21,11 +22,19 @@ export class UserService {
         return user;
     }
 
+    async getByEmail(email: string): Promise<User | null> {
+        return await this.userModel.findOne({
+            where: {
+                email,
+            },
+        });
+    }
+
     async getAll(): Promise<User[]> {
         return await this.userModel.findAll();
     }
 
-    async create(body: User): Promise<User> {
+    async create(body: RegisterDto): Promise<User> {
         return await this.userModel.create({
             ...body,
         });

@@ -14,8 +14,8 @@ export class LoggerMiddleware implements NestMiddleware {
             case 'PUTCH':
             case 'DELETE': {
                 const log = {
-                    queryParams: req.query,
                     body: req.body,
+                    headers: req.headers,
                 };
                 console.log(
                     req.ip,
