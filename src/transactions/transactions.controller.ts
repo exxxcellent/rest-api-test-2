@@ -22,7 +22,7 @@ export class TransactionsController {
 
     @Get('')
     async getAll() {
-        return await this.transactionsService.getAll();
+        return await this.transactionsService.getAllCached();
     }
 
     @Get(':id')

@@ -6,6 +6,7 @@ import {
     TransactionTypes,
 } from 'src/common/constants';
 import { Transaction } from 'src/common/models/transactions.model';
+import { RedisService } from 'src/redis/redis.service';
 import { UserService } from 'src/user/user.service';
 import { CreateTransactionDto } from './dto/create.dto';
 import { UpdateTransactionDto } from './dto/update.dto';
@@ -15,10 +16,28 @@ export class TransactionsService {
     constructor(
         @InjectModel(Transaction) private transactionModel: typeof Transaction,
         private readonly userService: UserService,
+        private readonly redisService: RedisService,
     ) {}
 
     async getAll() {
         return await this.transactionModel.findAll();
+    }
+
+    async getAllCached() {
+        const cachedTransactions =
+            await this.redisService.client.get('transactions');
+        if (!cachedTransactions) {
+            const transactions = await this.getAll();
+            await this.redisService.client.set(
+                'transactions',
+                JSON.stringify(transactions),
+                {
+                    EX: 30,
+                },
+            );
+            return transactions;
+        }
+        return JSON.parse(cachedTransactions);
     }
 
     async getById(id: string) {
@@ -36,6 +55,7 @@ export class TransactionsService {
             default:
                 break;
         }
+        await this.redisService.client.del('transactions');
         return await this.transactionModel.create(dto);
     }
 
@@ -48,6 +68,7 @@ export class TransactionsService {
         if (!affectedCount) {
             throw new BadRequestException(TRANSACTION_NOT_UPDATED);
         }
+        await this.redisService.client.del('transactions');
         return await this.getById(id);
     }
 
@@ -60,6 +81,7 @@ export class TransactionsService {
         if (!affectedCount) {
             throw new BadRequestException(TRANSACTION_NOT_DELETED);
         }
+        await this.redisService.client.del('transactions');
         return true;
     }
 }
