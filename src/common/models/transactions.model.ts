@@ -29,6 +29,9 @@ export class Transaction extends Model<
     id: number;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
+    userId: number;
+
+    @Column({ type: DataType.INTEGER, allowNull: false })
     amount: number;
 
     @Column({ type: DataType.ENUM(...types), allowNull: false })

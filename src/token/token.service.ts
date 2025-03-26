@@ -66,7 +66,7 @@ export class TokenService {
     }
 
     async validateAccessToken(accessToken: string) {
-        await this.jwtService.verifyAsync(accessToken, {
+        return await this.jwtService.verifyAsync(accessToken, {
             secret: process.env.ACCESS_TOKEN_SECRET,
         });
     }
