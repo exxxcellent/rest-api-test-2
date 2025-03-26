@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Headers, Post, Req, Res } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -10,6 +11,9 @@ import { LogoutRto } from './rto/logout.rto';
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
+    @ApiOperation({ summary: 'Register' })
+    @ApiResponse({ status: 201, description: 'User created successfully' })
+    @ApiResponse({ status: 400, description: 'Incorrect data' })
     @Post('register')
     public async register(
         @Body() dto: RegisterDto,
@@ -26,6 +30,10 @@ export class AuthController {
         res.end();
     }
 
+    @ApiOperation({ summary: 'Login' })
+    @ApiResponse({ status: 201, description: 'Loggined!' })
+    @ApiResponse({ status: 400, description: 'Incorrect data' })
+    @ApiResponse({ status: 404, description: 'User not found' })
     @Post('login')
     public async login(
         @Body() dto: LoginDto,
@@ -42,6 +50,10 @@ export class AuthController {
         res.end();
     }
 
+    @ApiOperation({ summary: 'Refresh' })
+    @ApiResponse({ status: 200, description: 'Tokens recevied' })
+    @ApiResponse({ status: 400, description: 'Incorrect data' })
+    @ApiResponse({ status: 404, description: 'Token not found' })
     @Get('refresh')
     public async refresh(
         @Req() req: Request,
@@ -59,6 +71,9 @@ export class AuthController {
         res.end();
     }
 
+    @ApiOperation({ summary: 'Logout' })
+    @ApiResponse({ status: 200, description: 'Logout!' })
+    @ApiResponse({ status: 404, description: 'User not found' })
     @Get('logout')
     public async logout(@Req() req: Request, @Res() res: Response) {
         const { refreshToken } = req.cookies;
@@ -68,11 +83,13 @@ export class AuthController {
         res.end();
     }
 
+    // for testing
     @Get('users')
     public async getUsers() {
         return await this.authService.getUsers();
     }
 
+    // for testing
     @Get('tokens')
     public async getTokens() {
         return await this.authService.getTokens();

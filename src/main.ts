@@ -15,10 +15,9 @@ async function bootstrap() {
     app.use(cookieParser());
 
     const config = new DocumentBuilder()
-        .setTitle('REST Api example')
+        .setTitle('REST API example')
         .setDescription('The REST API description')
         .setVersion('1.0')
-        .addTag('users')
         .build();
     const documentFactory = () =>
         SwaggerModule.createDocument(app, config, {
