@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { SequelizeModule, SequelizeModuleOptions } from '@nestjs/sequelize';
 import * as dotenv from 'dotenv';
 import { AppController } from './app.controller';
@@ -6,11 +7,13 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './common/middlewares';
 import { NotificationGateway } from './notification/notification.gateway';
+import { NotificationModule } from './notification/notification.module';
 import { RedisModule } from './redis/redis.module';
+import { ReminderService } from './reminder/reminder.service';
 import { TokenModule } from './token/token.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UserModule } from './user/user.module';
-import { NotificationModule } from './notification/notification.module';
+import { TaskModule } from './task/task.module';
 
 dotenv.config();
 
@@ -29,15 +32,17 @@ const sequelizeModuleOptions: SequelizeModuleOptions = {
 @Module({
     imports: [
         SequelizeModule.forRoot(sequelizeModuleOptions),
+        ScheduleModule.forRoot(),
         UserModule,
         AuthModule,
         TokenModule,
         TransactionsModule,
         RedisModule,
         NotificationModule,
+        TaskModule,
     ],
     controllers: [AppController],
-    providers: [AppService, NotificationGateway],
+    providers: [AppService, NotificationGateway, ReminderService],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

@@ -3,6 +3,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Transaction } from 'src/common/models/transactions.model';
 import { NotificationModule } from 'src/notification/notification.module';
 import { RedisModule } from 'src/redis/redis.module';
+import { TaskModule } from 'src/task/task.module';
 import { UserModule } from 'src/user/user.module';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
@@ -13,6 +14,7 @@ import { TransactionsService } from './transactions.service';
         UserModule,
         RedisModule,
         NotificationModule,
+        TaskModule,
     ],
     controllers: [TransactionsController],
     providers: [TransactionsService],

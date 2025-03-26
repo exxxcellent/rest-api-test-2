@@ -14,12 +14,11 @@ import {
     TRANSACTION_NOT_FOUND,
     TRANSACTION_NOT_UPDATED,
     TRANSACTION_UPDATED,
-    TransactionTypes,
 } from 'src/common/constants';
 import { Transaction } from 'src/common/models/transactions.model';
 import { NotificationGateway } from 'src/notification/notification.gateway';
 import { RedisService } from 'src/redis/redis.service';
-import { UserService } from 'src/user/user.service';
+import { TaskService } from 'src/task/task.service';
 import { CreateTransactionDto } from './dto/create.dto';
 import { UpdateTransactionDto } from './dto/update.dto';
 
@@ -27,9 +26,9 @@ import { UpdateTransactionDto } from './dto/update.dto';
 export class TransactionsService {
     constructor(
         @InjectModel(Transaction) private transactionModel: typeof Transaction,
-        private readonly userService: UserService,
         private readonly redisService: RedisService,
         private readonly notificationGateway: NotificationGateway,
+        private readonly taskService: TaskService,
     ) {}
 
     async getAll() {
@@ -58,16 +57,11 @@ export class TransactionsService {
     }
 
     async create(dto: CreateTransactionDto) {
-        switch (dto.type) {
-            case TransactionTypes.EXPENSE:
-                await this.userService.decrementBalance(dto.userId, dto.amount);
-                break;
-            case TransactionTypes.INCOME:
-                await this.userService.incrementBalance(dto.userId, dto.amount);
-                break;
-            default:
-                break;
-        }
+        await this.taskService.addTranasactionJob(
+            dto.userId,
+            dto.amount,
+            dto.type,
+        );
         await this.redisService.client.del('transactions');
         const transaction = await this.transactionModel.create(dto);
         this.notificationGateway.sendNotification(
